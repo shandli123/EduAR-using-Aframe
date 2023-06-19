@@ -1,0 +1,101 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+    <style>
+      body {
+        margin: 0;
+        overflow: hidden;
+      }
+
+      #container {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        z-index: 999;
+      }
+
+      #container input[type="file"],
+      #container button,
+      #container label,
+      #container div {
+        display: block;
+        margin-bottom: 10px;
+      }
+      /* body {
+        margin: 0;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background-color: #000;
+      }
+
+      #container {
+        width: 80%;
+        max-width: 600px;
+        text-align: center;
+      }
+
+      #container input[type="file"],
+      #container button,
+      #container label,
+      #container div {
+        display: block;
+        margin-bottom: 10px;
+      } */
+
+      @media only screen and (max-width: 600px) {
+        /* Styles specific to mobile devices */
+        #container {
+          width: 90%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <a-scene embedded arjs>
+      <a-marker preset="hiro">
+        <a-entity id="modelContainer" position="0 0 0" scale="1 1 1" visible="false"></a-entity>
+      </a-marker>
+      <a-entity camera></a-entity>
+    </a-scene>
+
+    <div id="container">
+      <label for="fileInput">Choose a GLB file:</label>
+      <input type="file" id="fileInput" accept=".glb">
+      <button onclick="loadModel()">Load Model</button>
+      <div>
+        <label for="scaleRange">Scale:</label>
+        <input type="range" id="scaleRange" min="0.003" max="1" step="0.001" value="1" onchange="updateScale(this.value)">
+      </div>
+    </div>
+
+    <script>
+      function loadModel() {
+        var fileInput = document.getElementById('fileInput');
+        var file = fileInput.files[0];
+
+        if (file) {
+          var modelContainer = document.getElementById('modelContainer');
+
+          var reader = new FileReader();
+          reader.onload = function(e) {
+            var modelURL = e.target.result;
+            modelContainer.setAttribute('gltf-model', modelURL);
+            modelContainer.setAttribute('visible', 'true');
+          };
+          reader.readAsDataURL(file);
+        }
+      }
+
+      function updateScale(scaleValue) {
+        var modelContainer = document.getElementById('modelContainer');
+        modelContainer.setAttribute('scale', scaleValue + ' ' + scaleValue + ' ' + scaleValue);
+      }
+    </script>
+  </body>
+</html>
