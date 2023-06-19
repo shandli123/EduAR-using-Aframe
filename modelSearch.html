@@ -1,0 +1,136 @@
+<!-- 6e90004869f62d7aecd5154d22a971e2 -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+
+  <script src="https://cdn.rawgit.com/jeromeetienne/AR.js/2.2.0/aframe/build/aframe-ar.js"></script>
+  <script src="https://static.sketchfab.com/api/sketchfab-viewer-1.12.1.js"></script>
+
+  <style>
+     #search-container {
+      position: absolute;
+      top: 10px;
+      left: 10vw;
+      z-index: 1;
+      
+    }
+
+    #search-button {
+      padding: 8px 16px;
+      font-size: 16px;
+    }
+    #keyword-input{
+        height: 7vh;
+      width: 70vw;
+    }
+
+    a-scene.arjs {
+      visibility: hidden;
+    }
+    html,
+body {
+  padding: 0;
+  margin: 0;
+  height: 100vh;
+  overflow: hidden;
+
+  -webkit-font-smoothing: antialiased;
+  -moz-font-smoothing: grayscale;
+  font-family: Open Sans, sans-serif;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+}
+.sketchfab {
+  height: 100%;
+  width: 100%;
+  border: 0;
+}
+
+.label {
+  height: 40px;
+  padding: 12px;
+  background-color: #efefef;
+}
+
+  </style>
+</head>
+<body>
+    <div id="search-container">
+        <input id="keyword-input" type="text" placeholder="Enter a keyword">
+        <button id="search-button" >Search</button>
+      </div>
+    <!-- <a-scene embedded arjs> -->
+      <div class="container">
+        <iframe class="sketchfab" id="api-frame"></iframe>
+        <!-- <a-sfb-model src="https://sketchfab.com/models/your-model-id-here"></a-sfb-model> -->
+    <!-- </a-scene> -->
+        <!-- <div class="label">This codepen is part of <a href="https://codepen.io/collection/VYzqoJ"> a series of codepens</a>, created for a Sketchfab Livestream.</div>-->
+      </div>
+      <script>
+   
+        window.onload = function() {
+          const searchButton = document.getElementById('search-button');
+          searchButton.addEventListener('click', searchModel);
+    
+          function searchModel() {
+            const keywordInput = document.getElementById('keyword-input');
+            const keyword = keywordInput.value.trim();
+    
+            if (keyword === '') {
+              console.log('Please enter a keyword.');
+              return;
+            }
+            console.log(keyword)
+            const apiKey = '6e90004869f62d7aecd5154d22a971e2';
+    
+            const apiUrl = `https://api.sketchfab.com/v3/search?type=models&q=${encodeURIComponent(keyword)}&api_key=${apiKey}&downloadable=true`;
+
+
+    
+            fetch(apiUrl)
+              .then(response => response.json())
+              .then(data => {
+                console.log(data);
+                const model = data.results[0];
+                uid=model.uid
+                const success = (api) => {
+            // api.start will start loading the 3D model
+                api.start(() => console.log("Sketchfab scene starts loading"));
+                api.addEventListener("viewerready", () => console.log("Sketchfab scene is ready"))
+                };
+
+                const loadSketchfab = (sceneuid, elementId) => {
+                // To get started with Sketchfab, we need to create a client
+                // object for a certain iframe in the DOM
+                const iframe = document.getElementById(elementId);
+                const client = new Sketchfab("1.12.1", iframe);
+
+                // Then we can initialize the client with a specific model
+                // and some player parameters
+                client.init(sceneuid, {
+                    success: success,
+                    error: () => console.error("Sketchfab API error"),
+                    ui_stop: 0,
+                    preload: 1,
+                    camera: 1
+                });
+                };
+
+            loadSketchfab(uid, "api-frame");
+              })
+              .catch(error => console.error(error));
+          }
+        }
+      </script>
+
+
+</body>
+</html>
