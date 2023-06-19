@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Markerless WebAR: Solar System</title>
+  <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+  <script src="https://cdn.rawgit.com/jeromeetienne/AR.js/2.0.8/aframe/build/aframe-ar.js"></script>
+  <script src="https://rawgit.com/nicolocarpignoli/nicolocarpignoli.github.io/master/ar-click-events/events.js"></script>
+  <script>
+    // Planet descriptions
+    document.addEventListener("DOMContentLoaded", function() {
+      // JavaScript code here
+   
+    const planetDescriptions = {
+      sun:'It is the centre of the solar system around which all planets revolve and is extremely hot',
+      mercury: 'Mercury is the closest planet to the Sun and the smallest planet in the solar system.',
+      venus: 'Venus is the second planet from the Sun and is known for its thick atmosphere and extreme temperatures.',
+      earth: 'Earth is the third planet from the Sun and is the only known planet to support life.',
+      mars: 'Mars is the fourth planet from the Sun and is often called the "Red Planet" due to its reddish appearance.',
+      jupiter: 'Jupiter is the largest planet in the solar system and is known for its giant storm called the Great Red Spot.',
+      saturn: 'Saturn is the sixth planet from the Sun and is recognized for its prominent ring system.',
+      uranus: 'Uranus is the seventh planet from the Sun and is characterized by its unique tilted axis of rotation.',
+      neptune: 'Neptune is the eighth and farthest planet from the Sun and is known for its vivid blue color.',
+    };
+
+    
+    
+
+    
+    const planetSpheres = document.querySelectorAll('#planetsContainer a-entity');
+      const descriptionPanel = document.querySelector('#descriptionPanel');
+      const descriptionText = document.querySelector('#descriptionText');
+
+
+  const raycaster = document.querySelector('[raycaster]');
+  const planetsContainer = document.querySelector('#planetsContainer');
+
+    // Dynamic Zoom In/Out
+    const zoomControls = document.querySelector('#zoomControls');
+    const camera = document.querySelector('a-entity[camera]');
+    let zoomLevel = 5;
+    
+    function zoomIn() {
+      zoomLevel -= 0.5;
+      camera.setAttribute('position', `0 0 ${zoomLevel}`);
+    }
+    
+    function zoomOut() {
+      zoomLevel += 0.5;
+      camera.setAttribute('position', `0 0 ${zoomLevel}`);
+    }
+
+    // Calculate the position and rotation of planets around the sun
+    const sun = document.querySelector('#sun');
+      const planets = Array.from(document.querySelectorAll('#planetsContainer a-entity'));
+      const totalPlanets = planets.length;
+      const angleIncrement = (2 * Math.PI) / totalPlanets;
+      const revolutionSpeeds = {
+        sun: 0,
+        mercury: 0.0005,
+        venus: 0.0003,
+        earth: 0.0002,
+        mars: 0.00015,
+        jupiter: 0.0001,
+        saturn: 0.00008,
+        uranus: 0.00006,
+        neptune: 0.00004,
+      };
+
+      function animatePlanets() {
+        const time = performance.now();
+
+        planets.forEach((planet, index) => {
+          const radius = 1.5 + index;
+          const angle = angleIncrement * index;
+          const revolutionSpeed = revolutionSpeeds[planet.id];
+          const x = Math.cos(angle + time * revolutionSpeed) * radius;
+          const z = Math.sin(angle + time * revolutionSpeed) * radius;
+
+          planet.setAttribute('position', `${x} 0 ${z}`);
+          // planet.setAttribute('rotation', `0 ${time * 20} 0`);
+        });
+
+        requestAnimationFrame(animatePlanets);
+      }
+
+    // Start the animation loop
+    animatePlanets();
+    // Variables to track rotation
+let isRotating = false;
+let previousMouseX = 0;
+
+// Function to handle mouse down event
+function onMouseDown(event) {
+  isRotating = true;
+  previousMouseX = event.clientX;
+}
+
+// Function to handle mouse up event
+function onMouseUp() {
+  isRotating = false;
+}
+
+// Function to handle mouse move event
+function onMouseMove(event) {
+  if (isRotating) {
+    const rotationSpeed = 0.5; // Adjust the rotation speed as desired
+
+    // Calculate the rotation amount based on the mouse movement
+    const deltaX = event.clientX - previousMouseX;
+    const rotationAmount = deltaX * rotationSpeed;
+
+    // Rotate the scene container
+    const solarSystemContainer = document.querySelector('#solarSystemContainer');
+    solarSystemContainer.object3D.rotation.y += THREE.MathUtils.degToRad(rotationAmount);
+
+    previousMouseX = event.clientX;
+  }
+}
+
+// Attach event listeners to handle rotation
+const sceneContainer = document.querySelector('a-scene');
+sceneContainer.addEventListener('mousedown', onMouseDown);
+sceneContainer.addEventListener('mouseup', onMouseUp);
+sceneContainer.addEventListener('mousemove', onMouseMove);
+
+// Variables to track rotation
+let isRotatingTouch = false;
+let previousTouchX = 0;
+
+// Function to handle touch start event
+function onTouchStart(event) {
+  isRotatingTouch = true;
+  previousTouchX = event.touches[0].clientX;
+}
+
+// Function to handle touch end event
+function onTouchEnd() {
+  isRotatingTouch = false;
+}
+
+// Function to handle touch move event
+function onTouchMove(event) {
+  if (isRotatingTouch) {
+    const rotationSpeed = 0.5; // Adjust the rotation speed as desired
+
+    // Calculate the rotation amount based on the touch movement
+    const deltaX = event.touches[0].clientX - previousTouchX;
+    const rotationAmount = deltaX * rotationSpeed;
+
+    // Rotate the scene container
+    const solarSystemContainer = document.querySelector('#solarSystemContainer');
+    solarSystemContainer.object3D.rotation.y += THREE.MathUtils.degToRad(rotationAmount);
+
+    previousTouchX = event.touches[0].clientX;
+  }
+}
+
+// Attach event listeners to handle rotation
+const sceneContainerTouch = document.querySelector('a-scene');
+sceneContainer.addEventListener('touchstart', onTouchStart);
+sceneContainer.addEventListener('touchend', onTouchEnd);
+sceneContainer.addEventListener('touchmove', onTouchMove);
+
+    
+  });
+  </script>
+  
+  
+  
+</head>
+<body style="margin: 0; overflow: hidden;">
+  <a-scene embedded arjs>
+    <!-- Camera and Lighting -->
+    <a-assets>
+      <a-assets-item id="sun-photo"
+          src="./assets/sun.glb">
+      </a-assets-item>
+      <a-assets-item id="mer"
+          src="./assets/mercury.glb">
+      </a-assets-item>
+      <a-assets-item id="ven"
+          src="./assets/venus.glb">
+      </a-assets-item>
+      <a-assets-item id="ear"
+          src="./assets/earth.glb">
+      </a-assets-item>
+      <a-assets-item id="mar"
+          src="./assets/mars.glb">
+      </a-assets-item>
+      <a-assets-item id="jup"
+          src="./assets/jupiter.glb">
+      </a-assets-item>
+      <a-assets-item id="sat"
+          src="./assets/saturn.glb">
+      </a-assets-item>
+      <a-assets-item id="ura"
+          src="./assets/uranus.glb">
+      </a-assets-item>
+      <a-assets-item id="nep"
+          src="./assets/neptune.glb">
+      </a-assets-item>
+      </a-assets>
+    <a-entity camera position="0 2 15" look-controls orbit-controls="target: 0 0 0"></a-entity>
+    <a-light type="ambient" intensity="0.5"></a-light>
+    <a-light type="directional" position="-10 10 5" target="a-camera"></a-light>
+    
+    <!-- Solar System Container -->
+  <a-entity id="solarSystemContainer" rotation="4 -3 -3" position="0 0 -5" >
+      
+      <!-- Sun -->
+      <a-entity id="sun" position="0 0 0" scale="0.1 0.1 0.1"  gltf-model="#sun-photo"  ></a-entity>
+      
+      <!-- Planets -->
+      
+    <a-entity id="planetsContainer">
+      <a-ring id="mercuryOrbit" radius-inner="1.5" radius-outer="1.6" color="#FFFFFF" position="0 0 0" rotation="-90 0 0"></a-ring>
+      <a-entity id="mercury" radius="0.08" position="1.5 0 0" scale="0.1 0.1 0.1" rotation="0 90 0" gltf-model="#mer" ></a-entity>
+
+      <a-ring id="venusOrbit" radius-inner="2.5" radius-outer="2.6" color="#FFFFFF" position="0.3 0 0" rotation="-90 0 0"></a-ring>
+      <a-entity id="venus" radius="0.1" position="2.5 0 0" scale="0.5 0.5 0.5" rotation="0 90 0" gltf-model="#ven" ></a-entity>
+
+      <a-ring id="earthOrbit" radius-inner="3.5" radius-outer="3.6" color="#FFFFFF" position="0 0 0" rotation="-90 0 0"></a-ring>
+      <a-entity id="earth" radius="0.15" position="3.5 0 0" scale="0.008 0.008 0.008" rotation="0 90 0" gltf-model="#ear" ></a-entity>
+
+      <a-ring id="marsOrbit" radius-inner="4.5" radius-outer="4.6" color="#FFFFFF" position="0 0 0" rotation="-90 0 0"></a-ring>
+      <a-entity id="mars" radius="0.12" position="4.5 0 0" scale="0.004 0.004 0.004" rotation="0 90 0" gltf-model="#mar" ></a-entity>
+
+      <a-ring id="jupiterOrbit" radius-inner="5.5" radius-outer="5.6" color="#FFFFFF" position="0 0 0" rotation="-90 0 0" ></a-ring>
+      <a-entity id="jupiter" radius="0.25" position="5.5 -5 0" scale="0.01 0.01 0.01" rotation="0 90 0" gltf-model="#jup"  ></a-entity>
+
+      <a-ring id="saturnOrbit" radius-inner="6.5" radius-outer="6.6" color="#FFFFFF" position="0 0 0" rotation="-90 0 0"></a-ring>
+      <a-entity id="saturn" radius="0.25" position="6.5 1 7" scale="0.01 0.01 0.01" rotation="0 90 0" gltf-model="#sat" ></a-entity>
+      
+
+      <a-ring id="uranusOrbit" radius-inner="7.5" radius-outer="7.6" color="#FFFFFF" position="0 0 0" rotation="-90 0 0"></a-ring>
+      <a-entity id="uranus" radius="0.18" position="7.5 0 0" scale="0.4 0.4 0.4" rotation="0 90 0" gltf-model="#ura" ></a-entity>
+
+      <a-ring id="neptuneOrbit" radius-inner="8.5" radius-outer="8.6" color="#FFFFFF" position="0 0 0" rotation="-90 0 0"></a-ring>
+      <a-entity id="neptune" radius="0.18" position="8.5 0 0" scale="0.003 0.003 0.003" rotation="0 90 0" gltf-model="#nep" ></a-entity>
+      
+    </a-entity>
+  </a-entity>
+
+    <!-- Descriptions -->
+    <div id="descriptionPanel" style="position: absolute; top: 10px; left: 10px; background-color: rgba(0, 0, 0, 0.8); padding: 10px; color: white; font-size: 18px; display: none;">
+      <p id="descriptionText"></p>
+    </div>
+    
+    <!-- Markerless Tracking -->
+    <a-entity id="markerlessControls" cursor raycaster="objects: [ar-raycaster], [ar-mouse-cursor];" ar-hit-test="autoRefresh: false;"></a-entity>
+
+    <!-- Dynamic Zoom In/Out -->
+    <!-- <a-entity id="zoomControls" visible="false">
+      <a-box id="zoomInButton" width="0.2" height="0.2" depth="0.05" color="green" position="-1 0 0" onclick="zoomIn()">zoomIn</a-box>
+      <a-box id="zoomOutButton" width="0.2" height="0.2" depth="0.05" color="red" position="1 0 0" onclick="zoomOut()">zoomOut</a-box>
+    </a-entity> -->
+    
+  </a-scene>
+
+  <!-- JavaScript to handle planet selection, zoom controls, and display description -->
+  
+</body>
+</html>
+
