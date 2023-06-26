@@ -5,6 +5,29 @@
   <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
   <script src="https://cdn.rawgit.com/jeromeetienne/AR.js/2.0.8/aframe/build/aframe-ar.js"></script>
   <script src="https://rawgit.com/nicolocarpignoli/nicolocarpignoli.github.io/master/ar-click-events/events.js"></script>
+  <style>
+    #back {
+  width: 22vw;
+  height: auto;
+  position: absolute;
+  top: 1vh;
+  left: 2vw;
+  border: 0.2em solid white;
+  text-align: center;
+  color: #fff;
+  border-radius: 100px;
+  /* background-image: url(./assets/images/one.jpg); */
+  background-color: darkblue;
+  background-size: cover;
+  text-decoration: none;
+}
+
+h2 {
+  font-size: 1.3em;
+  text-align: center;
+  font-family: monospace;
+}
+  </style>
   <script>
     // Planet descriptions
     document.addEventListener("DOMContentLoaded", function() {
@@ -171,6 +194,9 @@ sceneContainer.addEventListener('touchmove', onTouchMove);
 <body style="margin: 0; overflow: hidden;">
   <a-scene embedded arjs>
     <!-- Camera and Lighting -->
+    <a id="back" style="display: block; z-index: 10" href="8th.io/jh9mh">
+  <h2>Go back</h2>
+    </a>
     <a-assets>
       <a-assets-item id="sun-photo"
           src="./assets/sun.glb">
