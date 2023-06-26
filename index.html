@@ -192,11 +192,12 @@ sceneContainer.addEventListener('touchmove', onTouchMove);
   
 </head>
 <body style="margin: 0; overflow: hidden;">
-  <a-scene embedded arjs>
-    <!-- Camera and Lighting -->
-    <a id="back" style="display: block; z-index: 1000000" href="8th.io/jh9mh">
+  <a id="back" style="display: block; z-index: 100" href="8th.io/jh9mh">
   <h2>Go back</h2>
     </a>
+  <a-scene embedded arjs>
+    <!-- Camera and Lighting -->
+    
     <a-assets>
       <a-assets-item id="sun-photo"
           src="./assets/sun.glb">
