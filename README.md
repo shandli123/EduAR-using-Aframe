@@ -1,4 +1,4 @@
-# loadModel
+# EduAR using Aframe
 
 Visit solar system @: https://shandli123.github.io/loadModel/index.html 
 
